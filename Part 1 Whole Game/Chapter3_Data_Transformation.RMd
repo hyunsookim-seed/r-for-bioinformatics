@@ -1,0 +1,3 @@
+## | 이랑 %in% 랑 같은말
+filter(month ==1 | month ==1)
+filter(month %in% c(1,2)) ## Same word
