@@ -7,21 +7,25 @@
 #Tabular data is tidy if each value is placed in its own “cell”, each variable in its own column, and each observation in its own row.(각 값이 자기만의 ‘셀’에, 각 변수가 자기만의 열에, 각 관측값이 자기만의 행에 놓여 있다면 그 표 형식 데이터를 정돈된 데이터라고 합니다.)
 
 #when we want to make plots, the code will be 
-ggplot(
+```rggplot(
   data = ~~. # the name of data files
   aes(x= ~~, y= ~~)
   )
+```
+
 geom_point() ##if we type this code the code will filled with dots.
 geom_smooth(method = "lm") ## this code will draw the line that the relation of dots.
 #만약에 빈 데이터가 있다면 괄호안에 전부 다 (na.rm=TRUE)
 geom_point(aes(color=species, shape=species)) #구분
 #플롯 꾸미는법 >>
-labs(
-  title = "~~",
+```{R}
+```labs(
+```title = "~~",
   subtitle = "~~",
   x = "~~", y="~~",
   color="species", shape="~~",
-)
+)'''
+
 scale_color_colorblind() # this code change the color that is helpful to blind people
 geom_bar() #bar chart로 표현
 geom_histogram(binwidth = ~~) #histogram으로 표현/binwidth는 구간을 나누는 값
@@ -35,9 +39,11 @@ geom_bar(fill="red") #전체가 빨강
 #50th percentile is median(중앙값)
 #outlier points are fall more than 1.5 times than IQR.
 # box pot 그리는법 <<
+```r
 ggplot("dataname",aes(x=~~,y=~~)+
 )+
-  geom_boxplot()
+    geom_boxplot()
+```
 
 ##when we have to save the image of the ggplot, the code is >>
 ggsave="filename-plot.png"
