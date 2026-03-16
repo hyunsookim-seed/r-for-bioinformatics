@@ -18,13 +18,14 @@ geom_smooth(method = "lm") ## this code will draw the line that the relation of 
 #만약에 빈 데이터가 있다면 괄호안에 전부 다 (na.rm=TRUE)
 geom_point(aes(color=species, shape=species)) #구분
 #플롯 꾸미는법 >>
-```{R}
-```labs(
-```title = "~~",
+```r
+labs(
+title = "~~",
   subtitle = "~~",
   x = "~~", y="~~",
   color="species", shape="~~",
-)'''
+)
+'''
 
 scale_color_colorblind() # this code change the color that is helpful to blind people
 geom_bar() #bar chart로 표현
@@ -44,6 +45,8 @@ ggplot("dataname",aes(x=~~,y=~~)+
 )+
     geom_boxplot()
 ```
+
+
 
 ##when we have to save the image of the ggplot, the code is >>
 ggsave="filename-plot.png"
