@@ -1,0 +1,45 @@
+#when we have to install some packages or something, the code will be "install.packages()".
+#Also, when we have to load some package(when we start a new session), the code is "library()"
+#a variable is a quantity, quality, or property that you can measure.(변수는 우리가 측정할 수 있는 양, 성질, 또는 특성을 말합니다.)
+#A value is the state of a variable when you measure it. (값은 변수를 측정했을 때 그 변수가 가지는 상태입니다.)
+#An observation is a set of measurements made under similar conditions, usually all at the same time and on the same object.(관측값은 비슷한 조건에서 이루어진 측정들의 모음으로, 보통 같은 시점에 같은 대상에 대해 이루어진 여러 측정을 말합니다.)
+#Tabular data is a set of values, each associated with a variable and an observation.(표 형식 데이터는 각각이 하나의 변수와 하나의 관측값에 대응되는 값들의 집합입니다.)
+#Tabular data is tidy if each value is placed in its own “cell”, each variable in its own column, and each observation in its own row.(각 값이 자기만의 ‘셀’에, 각 변수가 자기만의 열에, 각 관측값이 자기만의 행에 놓여 있다면 그 표 형식 데이터를 정돈된 데이터라고 합니다.)
+
+#when we want to make plots, the code will be 
+ggplot(
+  data = ~~. # the name of data files
+  aes(x= ~~, y= ~~)
+  )
+geom_point() ##if we type this code the code will filled with dots.
+geom_smooth(method = "lm") ## this code will draw the line that the relation of dots.
+#만약에 빈 데이터가 있다면 괄호안에 전부 다 (na.rm=TRUE)
+geom_point(aes(color=species, shape=species)) #구분
+#플롯 꾸미는법 >>
+labs(
+  title = "~~",
+  subtitle = "~~",
+  x = "~~", y="~~",
+  color="species", shape="~~",
+)
+scale_color_colorblind() # this code change the color that is helpful to blind people
+geom_bar() #bar chart로 표현
+geom_histogram(binwidth = ~~) #histogram으로 표현/binwidth는 구간을 나누는 값
+geom_density() ## density의 표로 표현
+geom_bar(color="red") #테두리가 빨강
+geom_bar(fill="red") #전체가 빨강
+#위의 그래프 모형들은 전부 ggplot으로 똑같이 데이터를 불러오고 그아래에 써주면됨
+
+#3/6
+#when we visualize the relationship of variable, we usualy use the boxplot
+#interquartile range(IQR) is 25th percentile to 75th percentile.
+#50th percentile is median(중앙값)
+#outlier points are fall more than 1.5 times than IQR.
+# box pot 그리는법 <<
+ggplot("dataname",aes(x=~~,y=~~)+
+)+
+  geom_boxplot()
+
+##when we have to save the image of the ggplot, the code is >>
+ggsave="filename-plot.png"
+
