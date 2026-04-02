@@ -1,3 +1,235 @@
 ## | 이랑 %in% 랑 같은말
 filter(month ==1 | month ==1)
 filter(month %in% c(1,2)) ## Same word
+Difference between tibbles and datasets is the way tibbles print.
+They are designed for large datasets, so they show few row and columns.
+If we want to look all data, 
+```{R}
+View(name) ## or
+glimpse() 
+```
+
+Some abbreviations
+```{R}
+int ##integer
+dbl ##double(Real number)
+chr ##character
+dttm ##data-time
+```
+
+dplyr basics
+1. the first argument is always a data frame
+2. The subsequent arguments typically describe which columns to operate on, using the variable names.
+3. The output is always a new data frame. 
+
+The pipe # |>
+1. x |> f(y) is equivalent to f(x,y)
+2. x |> f(y) |> g(z) is equivalent to g(f(x,y),z)
+
+filter() #어떤조건을 만족하는 행만 남기고 나머지는 제거
+ex: 
+```{R}
+flights |>
+  filter(dep_delay > 120)
+```
+# > (greater than), >= (greater or equal than), == (equal to), !=(not equal to), & (and), | (or)
+
+Important!! 
+It is hard to use == and | in all the time, so if we have to filter the many factor, than %in% is more effective. (|and == is %in%)
+example: filter(month %in% c(1,2))
+
+When you run filter() dplyr executes the filtering operation, creating a new data frame, and then prints it.It doesn’t modify the existing flights dataset because dplyr functions never modify their inputs. To save the result, you need to use the assignment operator, <-:
+```{R}
+jan1 <- flights |>
+  filter(month == 1 & day == 1)
+```
+
+arrange() #행의 순서를 바꾸는 함수 (오름차순이나 내림차순으로 정리)
+arrange(year, month, day, dep_time)이면 오름차순(small to big)순으로 정리가되고 만약 arrange(desc(~))이면 내림차순으로 (big to small)로 정리가됨 
+distinct() # 중복된 행 제거
+예를 들어 distinct() 이렇게 되면 행에서 모두 겹치면 삭제되고 distinct(origin,dest)라 쓰면 origin, dest에서 겹치는행만 삭제된다. 출력도 이경우 origin, dest만 되고 만약 모든 컬럼이 필요하다면 distinct(origin,dest,keep_all=TRUE)를 사용하면 된다. 
+만약 겹치는 행이 몇번인지 세고 싶다면 distinct보단 count를 쓰는게 낫다. 코드는 count(origin,dest, sort=TRUE)
+
+mutate() -- 새로운 컬럼 생성(기존 컬럼을 이용해 새로운 컬럼 생성, 계산해서 새로운 변수 추가)
+select() -- 어떤 컬럼을 남길지 선택
+rename() -- 컬럼 이름 변경
+relocate() -- 컬럼 위치 변경
+
+mutate() adds new columns on the right hand side.
+하지만 .before .after 를 사용해서 새 컬럼 위치를 정해줄수있다
+```{r}
+flight |>  #dataset name
+  mutate(
+    gain= dep_delay-arr_delay,
+    speed=distance/air_time*60,
+    .before =1
+  ) #이러면 맨 앞에 컬럼에 새컬럼이 생긴다
+``` 
+
+반대로 예를 들어 .after= day라고 하면 day 컬럼 이후에 새 컬럼이 생긴다. 
+또 .keep 를 쓰면 내가 계산하면서 쓴 컬럼과 새로 생긴 컬럼들만 따로 볼수있다. 코드: .keep = "used"
+
+!!!하지만 반드시 기억할것! 이 모든 코드와 프린트된 것들도 저장되지 않으므로 새로운객체에 저장하거나 기본 데이터 셋에 저장해야한다
+select()는 많은 데이터셋에서 필요하거나 찾아아할 변수들을 찾아준다
+select columns by name >>
+```{r}
+flight |>
+  select(year,month,day)
+```
+select all columns between year and day >>
+```{R}
+flights |>
+  select(year:day)
+```
+select all columns expect those form year to day >>(!)
+```{R}
+flights|>
+  select(!year:day)
+```
+select all columns that are characters >>
+```{R}
+flights |>
+  select(where(is.character))
+```
+There are a number of helper functions you can use within select():
+starts_with("abc"): matches names that begin with “abc”.
+ends_with("xyz"): matches names that end with “xyz”.
+contains("ijk"): matches names that contain “ijk”.
+num_range("x", 1:3): matches x1, x2 and x3.
+
+Also we can change the variables name in the select funcion. The new name appears on the left side and the origin variable appears on the right side.
+```{R}
+flights |>
+  select(tail_num = tailnum)
+```
+
+or we can just type 
+```{R}
+rename(tail_num=tailnum)
+```
+
+|> 이걸 써주면 나중에 코드 보기 쉬움 >>
+근데 쓰기 힘드니 단축키 shift+cmd+m 사용
+
+group_by() 는arrange() 처럼 실제 데이터를 재배치하진않지만 데이터안에서는 그룹끼리 나눔
+```{R}
+flights %>% 
+  group_by(month)
+```
+
+we learned how to use the function "group_by()"
+so we are going to learn summarize(), which is important
+```{R}
+flights %>% 
+  group_by(month) %>% 
+  summarize(
+    avg_delay = mean(dep_delay)
+  )
+
+## Then we get 
+#> month avg_delay
+#> <int> <dbl>
+#> 1 1 NA
+#> 2 2 NA
+#> 3 3 NA
+#> 4 4 NA
+#> 5 5 NA
+#> 6 6 NA
+#> # ℹ 6 more rows
+```
+This is because of NA information, aka, no data.
+So we have to change the code as
+```{R}
+flights %>% 
+  group_by(month) %>% 
+  summarize(
+    avg_delay = mean(dep_delay,na.rm= TRUE)
+    n = n()
+  )
+
+## Then we get #> # A tibble: 12 × 2
+#> month avg_delay
+#> <int> <dbl>
+#> 1 1 10.0
+#> 2 2 10.8
+#> 3 3 13.2
+#> 4 4 13.9
+#> 5 5 13.0
+#> 6 6 20.8
+#> # ℹ 6 more rows
+```
+
+Also if we want to know the number of rows in each group
+ we just add the n = n()
+ 
+우리는 multiple variables로 group을 나눌수있다(아까는 하나만 다뤘음)
+```{R}
+daily <- flights %>% 
+  group_by(year, month, day)
+daily
+
+#result
+#> # A tibble: 336,776 × 19
+#> # Groups: year, month, day [365]
+#> year month day dep_time sched_dep_time dep_delay arr_time
+sched_arr_time
+#> <int> <int> <int> <int> <int> <dbl> <int>
+<int>
+#> 1 2013 1 1 517 515 2 830
+819
+#> 2 2013 1 1 533 529 4 850
+830
+#> 3 2013 1 1 542 540 2 923
+850
+#> 4 2013 1 1 544 545 -1 1004
+1022
+#> 5 2013 1 1 554 600 -6 812
+837
+#> 6 2013 1 1 554 558 -4 740
+728
+#> # ℹ 336,770 more rows
+#> # ℹ 11 more variables: arr_delay <dbl>, carrier <chr>, flight <int>, …
+```
+여기서 그룹은 365개인데 tibble은 336,776인 이유는 비행기가 총 그 양이여서!
+
+중요! --  놀랍게도 mulitple variables에서는 summarize()를 사용하면 안에 있던 그룹이 하나씩 사라진다
+예를 들어 코드가
+```{R}
+daily_flights <- daily |>
+summarize(n = n(),
+ .groups = "drop_last")
+
+#> `summarise()` has grouped output by 'year', 'month'. You can override
+using
+#> the `.groups` argument.
+```
+이면 처음에 group_by(year,month day)로 해놔서 day가 그룹에서 벗겨진다
+만약이상태에서 한번더 summarize()하면 month 가 사라지고 여기서 한번더 하면 남는게 하나라서 사라지지 않음
+# 그래서 위 코드를 보면 .groups = "drop_last"  가 있는데 이거는 마지막 day그룹을 없앤다는 의미
+.groups = 다양한 활용 방법
+#"drop_last"	마지막 그룹만 제거 (기본, 안해줘도 사라짐)
+#"drop"	그룹 전부 제거
+#"keep"	그룹 유지
+
+아까 만들어둔 그룹을 해제하고 싶으면 ungroup()를쓴다
+ungroup()를 하고 summarize()를 하면 전체 데이터셋을 이용해 하나의 결과값만 만든다
+
+우리가 지금까지 배운건 그룹으로 저장하고 다끝나면 그룹을 해제해주는 과정이였음
+근데 .by = 를 함수안에 써주면 함수안에서만 그룹으로 만들고 함수가 끝나면 기능해제
+예시:
+```{R}
+flights |>
+summarize(
+n = n(),
+.by = month
+delay = mean(dep_delay, na.rm = TRUE),
+)
+
+#Or if you want to group by multiple variables:
+flights |>
+summarize(
+delay = mean(dep_delay, na.rm = TRUE),
+n = n(),
+.by = c(origin, dest)
+)
+```
